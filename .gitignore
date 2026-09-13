@@ -1,0 +1,34 @@
+# Local Python environment
+.venv/
+venv/
+
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Editor settings
+.idea/
+.vscode/
+
+# Credentials and local configuration
+.env
+.env.*
+!.env.example
+.streamlit/secrets.toml
+kaggle.json
+
+# Model weights: distributed separately
+*.pt
+*.pth
+*.ckpt
+
+# Archives and local datasets
+*.zip
+data/
+datasets/
+levir_cd_writable/
+levir_original_masks/
+
+# Operating-system files
+Thumbs.db
+.DS_Store
