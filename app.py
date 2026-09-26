@@ -22,14 +22,65 @@ def png(array):
     Image.fromarray(array).save(out, format='PNG')
     return out.getvalue()
 
-checkpoint_path = Path(__file__).parent / 'levir_cd_best.pt'
-if not checkpoint_path.exists():
-    st.info('Train the supplied Colab notebook, then place levir_cd_best.pt beside app.py and refresh.')
-    st.stop()
+import tempfile
+import urllib.request
+
+MODEL_URL = (
+    "https://github.com/RoyalAskarov/satellite-change-detection/"
+    "releases/download/v1.0.0/levir_cd_best.pt"
+)
+
+# Fingerprint of your exported model, checked from your local file.
+MODEL_SHA256 = (
+    "69e7c93bfa89a81f73f73c39f1ead761"
+    "5911b651b968f1e67b803b742276fe85"
+)
+
+checkpoint_path = Path(__file__).parent / "levir_cd_best.pt"
+
 try:
-    model, metadata = get_model(str(checkpoint_path), checkpoint_path.stat().st_mtime_ns)
+    if not checkpoint_path.exists():
+        temporary_path = None
+
+        with st.spinner("Downloading the trained model. Please wait…"):
+            try:
+                request = urllib.request.Request(
+                    MODEL_URL,
+                    headers={"User-Agent": "BuildingChangeExplorer/1.0"},
+                )
+                digest = hashlib.sha256()
+
+                with urllib.request.urlopen(request, timeout=60) as response:
+                    with tempfile.NamedTemporaryFile(
+                        dir=checkpoint_path.parent,
+                        suffix=".download",
+                        delete=False,
+                    ) as temporary:
+                        temporary_path = Path(temporary.name)
+
+                        while chunk := response.read(1024 * 1024):
+                            temporary.write(chunk)
+                            digest.update(chunk)
+
+                if digest.hexdigest() != MODEL_SHA256:
+                    raise ValueError(
+                        "Model download verification failed. Please retry."
+                    )
+
+                temporary_path.replace(checkpoint_path)
+
+            finally:
+                if temporary_path is not None:
+                    temporary_path.unlink(missing_ok=True)
+
+    model, metadata = get_model(
+        str(checkpoint_path),
+        checkpoint_path.stat().st_mtime_ns,
+    )
+
 except Exception as exc:
-    st.error(f'Cannot load model: {exc}')
+    st.error(f"Cannot load the trained model: {exc}")
+    st.info("Check the connection and refresh the page to retry.")
     st.stop()
 
 left,right = st.columns(2)
