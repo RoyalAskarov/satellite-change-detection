@@ -125,7 +125,6 @@ if result is not None and result[0] == key:
     st.caption('This is a pixel fraction, not a building count or a measured ground area. Change includes additions and removals without distinguishing them. Model probabilities are not calibrated confidence scores.')
     st.download_button('Download mask', png(mask.astype(np.uint8)*255), 'change_mask.png','image/png')
     st.download_button('Download overlay', png(overlay),'change_overlay.png','image/png')
-    st.download_button('Download probability image', png((probability*65535).round().astype(np.uint16)), 'change_probability_16bit.png','image/png')
     report = {'threshold':threshold, 'changed_pixels':int(mask.sum()), 'total_pixels':int(mask.size),
               'changed_percent':float(mask.mean()*100), 'width':a.width,'height':a.height,
               'architecture':metadata['architecture'], 'dataset':'LEVIR-CD'}

@@ -9,7 +9,7 @@ The model is a Siamese ResNet-18 U-Net trained on LEVIR-CD in Google Colab. Both
 - Upload before-and-after PNG or JPEG images.
 - View the predicted mask and a red overlay.
 - Adjust the prediction threshold.
-- Download masks, overlays, probability images, and a JSON summary.
+- Download masks, overlays, and a JSON summary.
 - Run locally on CPU without retraining.
 
 ## Test results
